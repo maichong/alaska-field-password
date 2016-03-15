@@ -62,31 +62,6 @@ export default class PasswordFieldView extends React.Component {
 
   componentWillUnmount() {
   }
-
-  _onInputOneBlur() {
-    let inputOne = this.refs.inputOne.getValue().trim();
-    if (inputOne != "" && (inputOne.length < 6 || inputOne.length > 20)) {
-      this.setState({oneErrorText: "密码长度必须在6-20位"});
-    } else {
-      this.setState({oneErrorText: ""});
-      if (inputOne != "") {
-        this._submitPwd.call(this, 1);
-      }
-    }
-  }
-
-  _onInputTwoBlur() {
-    let inputTwo = this.refs.inputTwo.getValue().trim();
-    if (inputTwo != "" && (inputTwo.length < 6 || inputTwo.length > 20)) {
-      this.setState({twoErrorText: "密码长度必须在6-20位"});
-    } else {
-      this.setState({twoErrorText: ""});
-      if (inputTwo != "") {
-        this._submitPwd.call(this, 2);
-      }
-    }
-  }
-
   _submitPwd(index) {
     let inputOne = this.refs.inputOne.getValue().trim();
     let inputTwo = this.refs.inputTwo.getValue().trim();
