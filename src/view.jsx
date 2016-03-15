@@ -7,7 +7,7 @@
 import React from 'react';
 import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
 import ContextPure from 'material-ui/lib/mixins/context-pure';
-
+import TextField from 'material-ui/lib/text-field';
 export default class PasswordFieldView extends React.Component {
 
   static propTypes = {
@@ -63,6 +63,64 @@ export default class PasswordFieldView extends React.Component {
   componentWillUnmount() {
   }
 
+  _onInputOneBlur() {
+    let inputOne = this.refs.inputOne.getValue().trim();
+    if (inputOne != "" && (inputOne.length < 6 || inputOne.length > 20)) {
+      this.setState({oneErrorText: "密码长度必须在6-20位"});
+    } else {
+      this.setState({oneErrorText: ""});
+      if (inputOne != "") {
+        this._submitPwd.call(this, 1);
+      }
+    }
+  }
+
+  _onInputTwoBlur() {
+    let inputTwo = this.refs.inputTwo.getValue().trim();
+    if (inputTwo != "" && (inputTwo.length < 6 || inputTwo.length > 20)) {
+      this.setState({twoErrorText: "密码长度必须在6-20位"});
+    } else {
+      this.setState({twoErrorText: ""});
+      if (inputTwo != "") {
+        this._submitPwd.call(this, 2);
+      }
+    }
+  }
+
+  _submitPwd(index) {
+    let inputOne = this.refs.inputOne.getValue().trim();
+    let inputTwo = this.refs.inputTwo.getValue().trim();
+    let one = false;
+    let two = false;
+    if (inputOne == "") {
+      this.setState({oneErrorText: ""});
+    } else if (inputOne.length < 6 || inputOne.length > 20) {
+      this.setState({oneErrorText: "密码长度必须在6-20位"});
+    } else {
+      this.setState({oneErrorText: ""});
+      one = true;
+    }
+    if (inputTwo == "") {
+      this.setState({twoErrorText: ""});
+    } else if (inputTwo.length < 6 || inputTwo.length > 20) {
+      this.setState({twoErrorText: "密码长度必须在6-20位"});
+    } else {
+      this.setState({twoErrorText: ""});
+      two = true;
+    }
+    if (one && two){
+      if(inputOne === inputTwo) {
+        this.props.onChange && this.props.onChange(inputOne);
+      }else{
+        if(index == 1){
+          this.setState({oneErrorText: "密码不一致"});
+        }else{
+          this.setState({twoErrorText: "密码不一致"});
+        }
+      }
+    }
+  }
+
   render() {
     let props = this.props;
     let state = this.state;
@@ -70,7 +128,25 @@ export default class PasswordFieldView extends React.Component {
       root: {}
     };
     return (
-      <div style={styles.root}>PasswordFieldView Component</div>
+      <div style={styles.root}>
+        <TextField
+          ref="inputOne"
+          type="password"
+          errorText={this.state.oneErrorText}
+          floatingLabelText="输入新密码"
+          disabled={props.disabled}
+          onBlur={this._submitPwd.bind(this,1)}
+        />
+        <br/>
+        <TextField
+          ref="inputTwo"
+          type="password"
+          errorText={this.state.twoErrorText}
+          floatingLabelText="再次输入新密码"
+          disabled={props.disabled}
+          onBlur={this._submitPwd.bind(this,2)}
+        />
+      </div>
     );
   }
 }
