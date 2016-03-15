@@ -34,6 +34,6 @@
     "rimraf": "^2.5.2"
   },
   "dependencies": {
-    "md5": "^2.0.0"
+    "bcrypt": "^0.8.5"
   }
 }
