@@ -11,7 +11,10 @@ import TextField from 'material-ui/lib/text-field';
 export default class PasswordFieldView extends React.Component {
 
   static propTypes = {
-    children: React.PropTypes.node
+    children: React.PropTypes.node,
+    inputOneErrorText: React.PropTypes.string,//新密码不合规则提示
+    inputTwoErrorText: React.PropTypes.string,//重复密码不合规则提示
+    errorText: React.PropTypes.string //密码不一致提示
   };
 
   static contextTypes = {
@@ -34,6 +37,11 @@ export default class PasswordFieldView extends React.Component {
       muiTheme: context.muiTheme ? context.muiTheme : getMuiTheme(),
       views: context.views
     };
+    console.log(props);
+    this.handleChange1 = this.handleChange.bind(this, 1);
+    this.handleChange2 = this.handleChange.bind(this, 2);
+    this.handleBlur1 = this.submitPwd.bind(this, 1);
+    this.handleBlur2 = this.submitPwd.bind(this, 2);
   }
 
   getChildContext() {
@@ -43,10 +51,8 @@ export default class PasswordFieldView extends React.Component {
     };
   }
 
-  componentWillMount() {
-  }
-
-  componentDidMount() {
+  shouldComponentUpdate(props, state) {
+    return props.disabled != this.props.disabled;
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -60,37 +66,35 @@ export default class PasswordFieldView extends React.Component {
     this.setState(newState);
   }
 
-  componentWillUnmount() {
+  handleChange(index, e) {
+    this.setState({['value' + index]: e.target.value});
   }
-  _submitPwd(index) {
-    let inputOne = this.refs.inputOne.getValue().trim();
-    let inputTwo = this.refs.inputTwo.getValue().trim();
+
+  submitPwd(index) {
+    let inputOne = this.state.value1;
+    let inputTwo = this.state.value2;
     let one = false;
     let two = false;
-    if (inputOne == "") {
-      this.setState({oneErrorText: ""});
-    } else if (inputOne.length < 6 || inputOne.length > 20) {
-      this.setState({oneErrorText: "密码长度必须在6-20位"});
+    if (inputOne === '') {
+      this.setState({oneErrorText: this.props.inputOneErrorText || ''});
     } else {
-      this.setState({oneErrorText: ""});
+      this.setState({oneErrorText: ''});
       one = true;
     }
-    if (inputTwo == "") {
-      this.setState({twoErrorText: ""});
-    } else if (inputTwo.length < 6 || inputTwo.length > 20) {
-      this.setState({twoErrorText: "密码长度必须在6-20位"});
+    if (inputTwo === '') {
+      this.setState({twoErrorText: this.props.inputTwoErrorText || ''});
     } else {
-      this.setState({twoErrorText: ""});
+      this.setState({twoErrorText: ''});
       two = true;
     }
-    if (one && two){
-      if(inputOne === inputTwo) {
+    if (one && two) {
+      if (inputOne === inputTwo) {
         this.props.onChange && this.props.onChange(inputOne);
-      }else{
-        if(index == 1){
-          this.setState({oneErrorText: "密码不一致"});
-        }else{
-          this.setState({twoErrorText: "密码不一致"});
+      } else {
+        if (index == 1) {
+          this.setState({oneErrorText: this.props.errorText || ''});
+        } else {
+          this.setState({twoErrorText: this.props.errorText || ''});
         }
       }
     }
@@ -105,21 +109,23 @@ export default class PasswordFieldView extends React.Component {
     return (
       <div style={styles.root}>
         <TextField
-          ref="inputOne"
+          value={state.value1}
           type="password"
-          errorText={this.state.oneErrorText}
+          errorText={state.oneErrorText}
           floatingLabelText="输入新密码"
           disabled={props.disabled}
-          onBlur={this._submitPwd.bind(this,1)}
+          onBlur={this.handleBlur1}
+          onChange={this.handleChange1}
         />
         <br/>
         <TextField
-          ref="inputTwo"
+          value={state.value2}
           type="password"
-          errorText={this.state.twoErrorText}
+          errorText={state.twoErrorText}
           floatingLabelText="再次输入新密码"
           disabled={props.disabled}
-          onBlur={this._submitPwd.bind(this,2)}
+          onBlur={this.handleBlur2}
+          onChange={this.handleChange2}
         />
       </div>
     );
