@@ -116,8 +116,8 @@ export default class PasswordFieldView extends React.Component {
           disabled={props.disabled}
           onBlur={this.handleBlur1}
           onChange={this.handleChange1}
+          style={{marginRight:"10px"}}
         />
-        <br/>
         <TextField
           value={state.value2}
           type="password"
