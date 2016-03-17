@@ -5,9 +5,11 @@
  */
 
 import React from 'react';
+import { shallowEqual } from 'alaska-admin-view'
 import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
 import ContextPure from 'material-ui/lib/mixins/context-pure';
 import TextField from 'material-ui/lib/text-field';
+
 export default class PasswordFieldView extends React.Component {
 
   static propTypes = {
@@ -52,7 +54,7 @@ export default class PasswordFieldView extends React.Component {
   }
 
   shouldComponentUpdate(props, state) {
-    return props.disabled != this.props.disabled;
+    return props.disabled != this.props.disabled || !shallowEqual(state, this.state);
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -75,26 +77,29 @@ export default class PasswordFieldView extends React.Component {
     let inputTwo = this.state.value2;
     let one = false;
     let two = false;
-    if (inputOne === '') {
+    if (!inputOne) {
+      one = false;
       this.setState({oneErrorText: this.props.inputOneErrorText || ''});
     } else {
-      this.setState({oneErrorText: ''});
       one = true;
+      this.setState({oneErrorText: ''});
+
     }
-    if (inputTwo === '') {
+    if (!inputTwo) {
+      two = false;
       this.setState({twoErrorText: this.props.inputTwoErrorText || ''});
     } else {
-      this.setState({twoErrorText: ''});
       two = true;
+      this.setState({twoErrorText: ''});
     }
     if (one && two) {
-      if (inputOne === inputTwo) {
+      if (inputOne == inputTwo) {
         this.props.onChange && this.props.onChange(inputOne);
       } else {
         if (index == 1) {
-          this.setState({oneErrorText: this.props.errorText || ''});
+          this.setState({oneErrorText: '密码不一致'});
         } else {
-          this.setState({twoErrorText: this.props.errorText || ''});
+          this.setState({twoErrorText: '密码不一致'});
         }
       }
     }
@@ -111,7 +116,7 @@ export default class PasswordFieldView extends React.Component {
         <TextField
           value={state.value1}
           type="password"
-          errorText={state.oneErrorText}
+          errorText={this.state.oneErrorText}
           floatingLabelText="输入新密码"
           disabled={props.disabled}
           onBlur={this.handleBlur1}
@@ -121,7 +126,7 @@ export default class PasswordFieldView extends React.Component {
         <TextField
           value={state.value2}
           type="password"
-          errorText={state.twoErrorText}
+          errorText={this.state.twoErrorText}
           floatingLabelText="再次输入新密码"
           disabled={props.disabled}
           onBlur={this.handleBlur2}
