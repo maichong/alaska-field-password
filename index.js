@@ -33,6 +33,7 @@ exports.initSchema = function (field, schema, Model) {
   let NEED_HASHING = '__' + field.path + '_needs_hassing';
   schema.path(field.path, {
     type: String,
+    required: field.required,
     set: function (password) {
       this[NEED_HASHING] = true;
       return password;
@@ -43,7 +44,8 @@ exports.initSchema = function (field, schema, Model) {
   });
 
   /**
-   * 比较密码
+   * [async] 比较密码
+   * @params {string} candidate
    */
   Model.underscoreMethod(field.path, 'compare', function (candidate) {
     let record = this;

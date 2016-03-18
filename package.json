@@ -1,6 +1,6 @@
 {
   "name": "alaska-field-password",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Alaska password field",
   "main": "index.js",
   "scripts": {
