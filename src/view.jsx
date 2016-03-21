@@ -5,133 +5,79 @@
  */
 
 import React from 'react';
-import { shallowEqual } from 'alaska-admin-view'
-import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
-import ContextPure from 'material-ui/lib/mixins/context-pure';
-import TextField from 'material-ui/lib/text-field';
+import { shallowEqual } from 'alaska-admin-view';
+import { Input } from 'react-bootstrap';
 
 export default class PasswordFieldView extends React.Component {
 
   static propTypes = {
-    children: React.PropTypes.node,
-    inputOneErrorText: React.PropTypes.string,//新密码不合规则提示
-    inputTwoErrorText: React.PropTypes.string,//重复密码不合规则提示
-    errorText: React.PropTypes.string //密码不一致提示
+    errorText: React.PropTypes.string,
+    disabled: React.PropTypes.bool
   };
 
-  static contextTypes = {
-    muiTheme: React.PropTypes.object,
-    views: React.PropTypes.object,
-  };
-
-  static childContextTypes = {
-    muiTheme: React.PropTypes.object,
-    views: React.PropTypes.object,
-  };
-
-  static mixins = [
-    ContextPure
-  ];
-
-  constructor(props, context) {
+  constructor(props) {
     super(props);
     this.state = {
-      muiTheme: context.muiTheme ? context.muiTheme : getMuiTheme(),
-      views: context.views
+      value1: '',
+      value2: ''
     };
-    console.log(props);
     this.handleChange1 = this.handleChange.bind(this, 1);
     this.handleChange2 = this.handleChange.bind(this, 2);
-    this.handleBlur1 = this.submitPwd.bind(this, 1);
-    this.handleBlur2 = this.submitPwd.bind(this, 2);
-  }
-
-  getChildContext() {
-    return {
-      muiTheme: this.state.muiTheme,
-      views: this.context.views,
-    };
   }
 
   shouldComponentUpdate(props, state) {
-    return props.disabled != this.props.disabled || !shallowEqual(state, this.state);
-  }
-
-  componentWillReceiveProps(nextProps, nextContext) {
-    let newState = {};
-    if (nextContext.muiTheme) {
-      newState.muiTheme = nextContext.muiTheme;
-    }
-    if (nextContext.views) {
-      newState.views = nextContext.views;
-    }
-    this.setState(newState);
+    return props.disabled !== this.props.disabled || !shallowEqual(state, this.state);
   }
 
   handleChange(index, e) {
-    this.setState({['value' + index]: e.target.value});
+    this.setState({ ['value' + index]: e.target.value });
   }
 
-  submitPwd(index) {
-    let inputOne = this.state.value1;
-    let inputTwo = this.state.value2;
-    let one = false;
-    let two = false;
-    if (!inputOne) {
-      one = false;
-      this.setState({oneErrorText: this.props.inputOneErrorText || ''});
-    } else {
-      one = true;
-      this.setState({oneErrorText: ''});
+  handleBlur = () => {
+    let value1 = this.state.value1;
+    let value2 = this.state.value2;
+    let newState = {};
+    if (value1 && value1 != value2) {
+      newState.errorText2 = value2 ? '密码不一致' : '请再次输入密码';
+    }
+    if (value1 && value1 == value2) {
+      this.props.onChange && this.props.onChange(value1);
+    }
 
-    }
-    if (!inputTwo) {
-      two = false;
-      this.setState({twoErrorText: this.props.inputTwoErrorText || ''});
-    } else {
-      two = true;
-      this.setState({twoErrorText: ''});
-    }
-    if (one && two) {
-      if (inputOne == inputTwo) {
-        this.props.onChange && this.props.onChange(inputOne);
-      } else {
-        if (index == 1) {
-          this.setState({oneErrorText: '密码不一致'});
-        } else {
-          this.setState({twoErrorText: '密码不一致'});
-        }
-      }
-    }
+    this.setState(newState);
   }
 
   render() {
     let props = this.props;
     let state = this.state;
-    let styles = {
-      root: {}
-    };
     return (
-      <div style={styles.root}>
-        <TextField
-          value={state.value1}
-          type="password"
-          errorText={this.state.oneErrorText}
-          floatingLabelText="输入新密码"
-          disabled={props.disabled}
-          onBlur={this.handleBlur1}
-          onChange={this.handleChange1}
-          style={{marginRight:"10px"}}
-        />
-        <TextField
-          value={state.value2}
-          type="password"
-          errorText={this.state.twoErrorText}
-          floatingLabelText="再次输入新密码"
-          disabled={props.disabled}
-          onBlur={this.handleBlur2}
-          onChange={this.handleChange2}
-        />
+      <div className="form-group">
+        <label className="col-md-2 control-label">{props.field.label}</label>
+        <div className="col-md-10">
+          <div className="col-sm-4" style={{marginRight:20}}>
+            <Input
+              type="password"
+              value={state.value1}
+              errorText={this.state.oneErrorText}
+              placeholder="输入新密码"
+              disabled={props.disabled}
+              onBlur={this.handleBlur}
+              onChange={this.handleChange1}
+              style={{ marginRight:10 }}
+            />
+          </div>
+          <div className="col-sm-4">
+            <Input
+              type="password"
+              value={state.value2}
+              errorText={this.state.twoErrorText}
+              placeholder="再次输入新密码"
+              disabled={props.disabled}
+              onBlur={this.handleBlur}
+              onChange={this.handleChange2}
+            />
+          </div>
+        </div>
       </div>
     );
   }
