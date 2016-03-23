@@ -36,29 +36,43 @@ export default class PasswordFieldView extends React.Component {
   handleBlur = () => {
     let value1 = this.state.value1;
     let value2 = this.state.value2;
-    let newState = {};
+    let newState = {
+      errorText: ''
+    };
     if (value1 && value1 != value2) {
-      newState.errorText2 = value2 ? '密码不一致' : '请再次输入密码';
+      newState.errorText = value2 ? '密码不一致' : '请再次输入密码';
     }
     if (value1 && value1 == value2) {
       this.props.onChange && this.props.onChange(value1);
     }
 
     this.setState(newState);
-  }
+  };
 
   render() {
     let props = this.props;
     let state = this.state;
+    let className = 'form-group';
+
+    let help = props.field.help;
+    let errorText = state.errorText;
+    if (!errorText) {
+      errorText = props.errorText;
+    }
+    if (errorText) {
+      help = errorText;
+      className += ' has-error';
+    }
+
     return (
-      <div className="form-group">
+      <div className={className}>
         <label className="col-md-2 control-label">{props.field.label}</label>
         <div className="col-md-10">
           <div className="col-sm-4" style={{marginRight:20}}>
             <Input
               type="password"
               value={state.value1}
-              errorText={this.state.oneErrorText}
+              help={help}
               placeholder="输入新密码"
               disabled={props.disabled}
               onBlur={this.handleBlur}
@@ -70,7 +84,6 @@ export default class PasswordFieldView extends React.Component {
             <Input
               type="password"
               value={state.value2}
-              errorText={this.state.twoErrorText}
               placeholder="再次输入新密码"
               disabled={props.disabled}
               onBlur={this.handleBlur}
