@@ -15,6 +15,10 @@ export default class PasswordFieldView extends React.Component {
     disabled: React.PropTypes.bool
   };
 
+  static contextTypes = {
+    t: React.PropTypes.func
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -34,13 +38,14 @@ export default class PasswordFieldView extends React.Component {
   }
 
   handleBlur = () => {
+    const t = this.context.t;
     let value1 = this.state.value1;
     let value2 = this.state.value2;
     let newState = {
       errorText: ''
     };
     if (value1 && value1 != value2) {
-      newState.errorText = value2 ? '密码不一致' : '请再次输入密码';
+      newState.errorText = t(value2 ? 'The passwords are not match' : 'Please enter the new password again');
     }
     if (value1 && value1 == value2) {
       this.props.onChange && this.props.onChange(value1);
@@ -50,6 +55,7 @@ export default class PasswordFieldView extends React.Component {
   };
 
   render() {
+    const t = this.context.t;
     let props = this.props;
     let state = this.state;
     let className = 'form-group';
@@ -73,7 +79,7 @@ export default class PasswordFieldView extends React.Component {
               type="password"
               value={state.value1}
               help={help}
-              placeholder="输入新密码"
+              placeholder={t('Enter new password')}
               disabled={props.disabled}
               onBlur={this.handleBlur}
               onChange={this.handleChange1}
@@ -84,7 +90,7 @@ export default class PasswordFieldView extends React.Component {
             <Input
               type="password"
               value={state.value2}
-              placeholder="再次输入新密码"
+              placeholder={t('Repeat password')}
               disabled={props.disabled}
               onBlur={this.handleBlur}
               onChange={this.handleChange2}
