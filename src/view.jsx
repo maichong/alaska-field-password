@@ -6,13 +6,17 @@
 
 import React from 'react';
 import { shallowEqual } from 'alaska-admin-view';
-import { Input } from 'react-bootstrap';
 
 export default class PasswordFieldView extends React.Component {
 
   static propTypes = {
+    model: React.PropTypes.object,
+    field: React.PropTypes.object,
+    data: React.PropTypes.object,
     errorText: React.PropTypes.string,
-    disabled: React.PropTypes.bool
+    disabled: React.PropTypes.bool,
+    value: React.PropTypes.any,
+    onChange: React.PropTypes.func,
   };
 
   static contextTypes = {
@@ -56,46 +60,73 @@ export default class PasswordFieldView extends React.Component {
 
   render() {
     const t = this.context.t;
-    let props = this.props;
+    let { field, disabled } = this.props;
     let state = this.state;
     let className = 'form-group';
 
-    let help = props.field.help;
-    let errorText = state.errorText;
-    if (!errorText) {
-      errorText = props.errorText;
-    }
+    let help = field.help;
+    let errorText = this.state.errorText || this.props.errorText;
     if (errorText) {
       help = errorText;
       className += ' has-error';
     }
 
-    return (
-      <div className={className}>
-        <label className="col-md-2 control-label">{props.field.label}</label>
-        <div className="col-md-10">
-          <div className="col-sm-4" style={{marginRight:20}}>
-            <Input
+    let helpElement = help ? <p className="help-block">{help}</p> : null;
+
+    let inputElement;
+
+    if (field.static) {
+      inputElement = <p className="form-control-static">******</p>;
+    } else {
+      inputElement = (
+        <div className="row">
+          <div className="col-sm-4">
+            <input
+              className="form-control"
               type="password"
               value={state.value1}
-              help={help}
               placeholder={t('Enter new password')}
-              disabled={props.disabled}
+              disabled={disabled}
               onBlur={this.handleBlur}
               onChange={this.handleChange1}
-              style={{ marginRight:10 }}
             />
           </div>
           <div className="col-sm-4">
-            <Input
+            <input
+              className="form-control"
               type="password"
               value={state.value2}
               placeholder={t('Repeat password')}
-              disabled={props.disabled}
+              disabled={disabled}
               onBlur={this.handleBlur}
               onChange={this.handleChange2}
             />
           </div>
+        </div>
+      );
+    }
+
+    let label = field.nolabel ? '' : field.label;
+
+    if (field.fullWidth) {
+      let labelElement = label ? (
+        <label className="control-label">{label}</label>
+      ) : null;
+      return (
+        <div className={className}>
+          {labelElement}
+          {inputElement}
+          {helpElement}
+        </div>
+      );
+    }
+
+    return (
+      <div className={className}>
+        <label className="col-sm-2 control-label">{label}</label>
+        <div className="col-sm-10">
+          {inputElement}
+          {helpElement}
         </div>
       </div>
     );

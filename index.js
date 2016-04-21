@@ -15,14 +15,17 @@ class PasswordField extends alaska.Field {
     let schema = this._schema;
     field.workFactor = field.workFactor || 10;
     let NEED_HASHING = '__' + field.path + '_needs_hassing';
-    schema.path(field.path, {
+    let options = {
       type: String,
-      required: field.required,
       set: function (password) {
         this[NEED_HASHING] = true;
         return password;
       }
-    });
+    };
+    if (field.required) {
+      options.required = true;
+    }
+    schema.path(field.path, options);
     this.underscoreMethod('data', function () {
       return this.get(field.path) ? '' : null;
     });
