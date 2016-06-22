@@ -29,6 +29,10 @@ class PasswordField extends alaska.Field {
     this.underscoreMethod('data', function () {
       return this.get(field.path) ? '' : null;
     });
+    this.underscoreMethod('set', function (value) {
+      this.set(field.path, value);
+      this[NEED_HASHING] = false;
+    });
 
     /**
      * [async] 比较密码
