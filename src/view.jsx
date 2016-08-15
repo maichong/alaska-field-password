@@ -7,20 +7,22 @@
 import React from 'react';
 import { shallowEqual } from 'alaska-admin-view';
 
+const { bool, object, any, func, string } = React.PropTypes;
+
 export default class PasswordFieldView extends React.Component {
 
   static propTypes = {
-    model: React.PropTypes.object,
-    field: React.PropTypes.object,
-    data: React.PropTypes.object,
-    errorText: React.PropTypes.string,
-    disabled: React.PropTypes.bool,
-    value: React.PropTypes.any,
-    onChange: React.PropTypes.func,
+    model: object,
+    field: object,
+    data: object,
+    errorText: string,
+    disabled: bool,
+    value: any,
+    onChange: func,
   };
 
   static contextTypes = {
-    t: React.PropTypes.func
+    t: func
   };
 
   constructor(props) {
@@ -62,7 +64,7 @@ export default class PasswordFieldView extends React.Component {
     const t = this.context.t;
     let { field, disabled } = this.props;
     let state = this.state;
-    let className = 'form-group';
+    let className = 'form-group password-field';
 
     let help = field.help;
     let errorText = this.state.errorText || this.props.errorText;
